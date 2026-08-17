@@ -3,6 +3,192 @@
 All notable changes to this project are documented here.
 Format: `[version] — summary`
 
+## [1.2.29] — Fix UnboundLocalError on layer connect
+
+### Fixed
+- `UnboundLocalError: cannot access local variable 'has_layer'` in `_update_toolbar_state` — `has_layer` was used before being defined. Moved definition before all uses.
+
+### Changed
+- README: ASCII interface diagram replaced with real screenshot
+
+---
+
+## [1.2.28] — Help button
+
+### Added
+- `❓ Help` button in toolbar: opens `README.md` from the plugin folder using the system default application
+
+---
+
+## [1.2.27] — Fix layer reconnect: selection not restored / no photos shown
+
+### Fixed
+- When reconnecting the same layer, the live selection is now read from `layer.selectedFeatures()` **before** `_disconnect_layer_listener()` is called, preventing the saved selection from being always empty
+- `_on_layer_selection_changed()` called directly after reconnect to guarantee photo load even if QGIS deduplicates the signal
+- `NameError: prev_selection not defined` (1.2.26 regression) fixed
+
+---
+
+## [1.2.26] — Apply Symbology redesigned as explicit button
+
+### Changed
+- `☐ Apply layer symbology` checkbox removed from controls bar
+- Replaced with `🎨 Apply Symbology` button (enabled only when a layer is connected)
+- Symbology no longer applied automatically on connect or export
+- After applying, `iface.showLayerPropertiesDialog(layer)` opens Layer Properties on the Symbology tab
+
+### Fixed
+- Auto-apply on export and on connect removed
+
+---
+
+## [1.2.25] — Configurable batch size in Assign Authors
+
+### Added
+- `Batch size:` spinbox (range 50–5000, default 500, step 100) inline next to "Write EXIF tag Artist" checkbox
+
+---
+
+## [1.2.24] — Fix batch EXIF write for large collections
+
+### Fixed
+- `cancel_flag` parameter missing from `write_exif_author_batch` signature (NameError at runtime)
+- `timeout=60` caused subprocess kill on large batches — replaced with `timeout=None`
+- Windows CLI length limit exceeded with many files — fixed using temp argfile (`-@`) and chunking (500 files/call)
+- Temp argfile cleaned up in `finally` block
+
+---
+
+## [1.2.23] — Stop button for EXIF write in Assign Authors
+
+### Added
+- `⏹ Stop` button appears during EXIF batch write; sets `_cancel_flag[0] = True`
+- Process finishes current author group then stops gracefully
+- `write_exif_author_batch(author_map, cancel_flag=None)`: checks flag between groups
+
+---
+
+## [1.2.22] — Assign Authors: status bar and progress bar
+
+### Added
+- `QLabel` status bar: shows "Ready", "Applying…", "Reading layer features: N/total", "Writing EXIF…", "Done."
+- `QProgressBar` (14px): visible only during layer scan and EXIF write
+
+---
+
+## [1.2.21] — Plugin window always on top
+
+### Changed
+- Added `Qt.WindowStaysOnTopHint` — plugin stays in front of QGIS; minimize to hide
+
+---
+
+## [1.2.20] — Assign Authors: batch EXIF write to all layer files
+
+### Added
+- `Apply + Write EXIF to all layer files` button: reads filepath and author from ALL layer features, calls ExifTool in one batch per unique author
+
+---
+
+## [1.2.19] — Batch EXIF Artist write in Assign Authors
+
+### Fixed
+- `write_exif_author` called once per photo (N processes) — replaced with `write_exif_author_batch` (one ExifTool call per unique author)
+
+### Added
+- `write_exif_author_batch(author_map)` in `exif_handler.py`
+
+---
+
+## [1.2.18] — Restore layer selection after disconnect/reconnect
+
+### Fixed
+- Selected feature IDs saved on disconnect (`_saved_selection`); restored via `layer.selectByIds()` on reconnect to same layer
+
+---
+
+## [1.2.17] — Assign Authors: apply only to selected table rows
+
+### Added
+- `☑ Apply only to selected rows in table` checkbox (default: checked)
+- Table uses `ExtendedSelection` mode (Shift+click, Ctrl+click)
+
+---
+
+## [1.2.16] — Assign Authors: show and edit already assigned authors
+
+### Added
+- `☐ Show also already assigned` checkbox: includes all items regardless of existing author
+- Table now has 4 columns: Group | Count | Current author (read-only) | New author (editable)
+- Pre-fills "New author" when group has a single existing author
+
+---
+
+## [1.2.15] — Fix author assignment with layer only (no session photos)
+
+### Fixed
+- `AuthorDialog._populate`: layer features were incorrectly skipped when `session_fps` was empty
+
+---
+
+## [1.2.14] — Write EXIF Artist tag from Assign Authors dialog
+
+### Added
+- `write_exif_author(image_path, author)` in `exif_handler.py`: writes `Artist` and `XMP:Creator` only
+- `☐ Write EXIF tag Artist` checkbox in `AuthorDialog`
+
+---
+
+## [1.2.13] — Fix AttributeError on layer connect
+
+### Fixed
+- `getattr(self, "_layer_loaded_photos", False)` guard added to prevent `AttributeError` when `_disconnect_layer_listener` called during `__init__`
+
+---
+
+## [1.2.12] — Fix layer connection
+
+### Fixed
+- `_disconnect_layer_listener`: `removeSelection()` called after `self._listened_layer = None` — refactored to save reference first
+- Removed redundant inner import `QgsVectorLayer as _QgsVL`
+
+---
+
+## [1.2.11] — Clearer separation between layer-connected and manually loaded photos
+
+### Added
+- Warning dialog when clicking `📁 Load Photos` while a layer is connected
+- Confirmation dialog on Disconnect when photos were loaded via layer
+- `_layer_loaded_photos` flag to distinguish photo sources
+
+---
+
+## [1.2.10] — Author assignment unified for photos and layer
+
+### Changed
+- `AuthorDialog` accepts both `photo_items` and `listened_layer` simultaneously
+- `btn_assign_authors` enabled when photos loaded OR layer connected
+- Single `_apply()` updates session and layer in one pass
+
+---
+
+## [1.2.9] — Author written to EXIF Artist tag
+
+### Added
+- `write_exif_gps` now accepts `author=` parameter
+- ExifTool: writes `-Artist` and `-XMP:Creator`; piexif: writes `IFD0.Artist`
+
+---
+
+## [1.2.8] — Author assignment in Batch Scan window
+
+### Added
+- `BatchAuthorDialog` (`ui/batch_author_dialog.py`): assign authors to scanned records by date or camera
+- `👤 Assign authors...` button in Batch Scan, enabled after scan
+- Global author field used as fallback at export
+
+---
+
 ## [1.2.7] — Removed Write EXIF to file and Write EXIF on export
 
 ### Removed

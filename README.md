@@ -45,7 +45,7 @@ A QGIS plugin to geotag photos from GPX tracks, manage GPS metadata, and export 
 
 ![GeotagManager Interface](icons/screenshot_interface.png)
 
-*GeotagManager v1.2.28 — interface showing a connected layer with 49 geotagged photos*
+*GeotagManager v1.2.29 — interface showing a connected layer with 49 geotagged photos*
 
 ---
 
