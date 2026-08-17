@@ -2400,12 +2400,12 @@ class GeotagManagerDialog(QDialog):
         self.btn_geotag.setToolTip(tip)
         can_write = has_matched and self._has_write_engine()
         self.act_export_gpkg.setEnabled(has_matched)
+        has_layer   = self._listened_layer is not None and self._listened_layer.isValid()
+        has_photos  = bool(self.photo_items)
         # Symbology button: only when layer connected
         self.btn_apply_symbology.setEnabled(has_layer)
 
         # Author assignment: enabled if photos loaded OR layer connected
-        has_layer   = self._listened_layer is not None and self._listened_layer.isValid()
-        has_photos  = bool(self.photo_items)
         can_authors = has_photos or has_layer
         self.btn_assign_authors.setEnabled(can_authors)
         self.btn_assign_authors.setToolTip(
