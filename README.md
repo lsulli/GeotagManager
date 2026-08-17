@@ -1,6 +1,6 @@
 # GeotagManager — QGIS Plugin
 
-**Version 1.2.6** | QGIS 3.x | Windows / macOS / Linux
+**Version 1.2.9** | QGIS 3.x | Windows / macOS / Linux
 
 A QGIS plugin to geotag photos from GPX tracks, manage GPS metadata, and export geolocated photo point layers.
 
