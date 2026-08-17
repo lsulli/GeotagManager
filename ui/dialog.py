@@ -2560,28 +2560,11 @@ class GeotagManagerDialog(QDialog):
             self._update_list_item(item)
 
     def _open_help(self):
-        """Open README.md from the plugin folder in the default browser/editor."""
-        import subprocess, sys
-        plugin_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        md_path = os.path.join(plugin_dir, "README.md")
-        if not os.path.isfile(md_path):
-            QMessageBox.warning(
-                self, "Help",
-                f"README.md not found in plugin folder:\n{plugin_dir}"
-            )
-            return
-        try:
-            if sys.platform.startswith("win"):
-                os.startfile(md_path)
-            elif sys.platform.startswith("darwin"):
-                subprocess.Popen(["open", md_path])
-            else:
-                subprocess.Popen(["xdg-open", md_path])
-        except Exception as e:
-            QgsMessageLog.logMessage(
-                f"GeotagManager: cannot open help file: {e}",
-                "GeotagManager", Qgis.Warning)
-            self._set_status(f"Cannot open help: {e}")
+        """Open GeotagManager README on GitHub."""
+        from qgis.PyQt.QtGui import QDesktopServices
+        from qgis.PyQt.QtCore import QUrl
+        url = "https://github.com/lsulli/GeotagManager/blob/main/README.md"
+        QDesktopServices.openUrl(QUrl(url))
 
     def _open_photo_folder(self):
 
